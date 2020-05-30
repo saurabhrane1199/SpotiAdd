@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="js/canvas.js"></script>
+  <script src="js/jquery-2.0.3.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="css/custom.css" rel="stylesheet" media="screen">
+  <link href="css/popup.css" rel="stylesheet" media="screen">
+</head>
+
+<body style='height: 500px; width: 300px; background-color: #000000; font-family: "Source Sans Pro"; color: white;'>
+  <div style="text-align:center;">
+    <img src="images/SnapSeek.png" style="padding:10px" width="60px" height="60px" alt="SnapSeek">
+  </div>
+
+  <div id="authorizationBlock" style="text-align: center;">
+    <h3>Authorize App to make changes to ur playlist</h3>
+    <button type="button" id="authSpotify" class="btn btn-labeled btn-success">
+      <span class="btn-label"><i class="glyphicon glyphicon-ok"></i></span>Authorize</button>
+  </div>
+
+  <div id="searchSongs" style="text-align: center;">
+    <h3>Great ! Click on the Search Button to Search Songs on SpotifyTM</h3>
+    <button type="button" id="submitButton" class="btn btn-labeled btn-success">
+      <span class="btn-label"><i class="glyphicon glyphicon-search"></i></span>Search</button>
+  </div>
+
+  <div class="container-fluid" id="songs" style="width: 80%;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Names</th>
+          <th>Artists</th>
+          <th>url</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+
+      </tbody>
+    </table>
+
+  </div>
+
+
+
+
+  <span id="not-found"></span>
+  <script src="popup.js"></script>
+</body>
+
+</html>

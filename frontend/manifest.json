@@ -1,0 +1,38 @@
+{
+  "name": "SpotiAdd",
+  "version": "1.0",
+  "description": "A lightweight Google Chrome extension, which adds you youtube music video to your spotify playlist",
+  "permissions": ["http://127.0.0.1:5000/*","tabs","activeTab","declarativeContent", "storage", "identity", "https://accounts.spotify.com/authorize/*"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup_new.html",
+    "default_icon": {
+      "16": "images/SnapSeek.png",
+      "32": "images/SnapSeek.png",
+      "48": "images/SnapSeek.png",
+      "128": "images/SnapSeek.png"
+    }
+  },
+  "icons": {
+    "16": "images/SnapSeek.png",
+    "32": "images/SnapSeek.png",
+    "48": "images/SnapSeek.png",
+    "128": "images/SnapSeek.png"
+  },
+  "commands": {
+    "refresh_url": {
+        "suggested_key": {
+            "default": "Alt + R",
+            "mac": "Alt+R"
+        },
+        "description": "Refresh the defined url"
+    }
+},
+  "options_page": "options.html",
+  "manifest_version": 2
+
+
+}
