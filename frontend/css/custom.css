@@ -5,7 +5,7 @@
  */
 
 body, section {			/* Change width and height to own preferences */
-	width: 1000px;
+	width: 10000px;
 	height: 400px;
 	overflow-x: scroll;
 }

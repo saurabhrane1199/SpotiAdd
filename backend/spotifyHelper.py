@@ -11,7 +11,7 @@ def getSongsSpotify(song_name,access_token):
         }
     )
     response_json = response.json()
-    print("RESPONSE_GETSONGSSPOTIFY : {}".format(response_json))
+    # print("RESPONSE_GETSONGSSPOTIFY : {}".format(response_json))
     songs = response_json["tracks"]["items"]
     if(len(songs)<5):
         uri = [songs[0]["uri"]]
@@ -41,7 +41,7 @@ def getSongsSpotify(song_name,access_token):
 def create_playlist(access_token):
     """Create A New Playlist"""
     request_body = json.dumps({
-        "name": "Youtube Liked Vids",
+        "name": "SpotiAdd",
         "description": "All Liked Youtube Videos",
         "public": True
     })
@@ -57,19 +57,10 @@ def create_playlist(access_token):
         }
     )
     response_json = response.json()
-    print("create_playlist_id : {}".format(response_json),file = sys.stdout)
+    # print("create_playlist_id : {}".format(response_json),file = sys.stdout)
     return response_json["id"]
 
-def add_song_to_playlist(uri,access_token):
-    """Add all liked songs into a new Spotify playlist"""
-    # populate dictionary with our liked songs
-    # collect all of uri
-    
-    # create a new playlist
-    playlist_id = create_playlist(access_token)
-    print("PlayList Id : {}".format(playlist_id),file = sys.stdout)
-
-    # add all songs into new playlist
+def add_song_to_playlist(uri,access_token,playlist_id):
     payload = {
         "uris" : [uri],
     }
@@ -93,3 +84,29 @@ def add_song_to_playlist(uri,access_token):
     else:
         response_json = response.json()
         return {'response' : response_json }
+
+def checkIfPlaylistExists(playListname, access_token):
+    query = "https://api.spotify.com/v1/me/playlists"
+    response = requests.get(
+        query,
+        headers={
+                "Content-Type": "application/json",
+                "Authorization": "Bearer {}".format(access_token)
+            }
+    )
+    if response.status_code != 200:
+        return { 'response_code' : response.status_code}
+    res = response.json()
+    playlistNamesDict = { res['items'][i]["name"] : res['items'][i]["id"]  for i in range(0,len(res['items'])) }
+    if playListname in playlistNamesDict.keys():
+        playListId = playlistNamesDict[playListname]
+        return {
+            'playListExists' : True,
+            'id' : playListId
+        }
+    else:
+        return {
+            'playListExists' : False,
+            'id' : None
+            }
+    

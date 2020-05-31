@@ -1,3 +1,20 @@
   .btn-label {position: relative;left: -12px;display: inline-block;padding: 6px 12px;background: rgba(0,0,0,0.15);border-radius: 3px 0 0 3px;}
   .btn-labeled {padding-top: 0;padding-bottom: 0;}
   .btn { margin-bottom:10px; }
+
+  .fa {
+    padding: 20px;
+    font-size: 30px;
+    width: 30px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 50%;
+  }
+
+  .addSongs .btn{
+      background-color: transparent !important; /* Blue background */
+      border: none; /* Remove borders */
+      padding: 12px 16px; /* Some padding */
+      font-size: 16px; /* Set a font size */
+      cursor: pointer; /* Mouse pointer on hover */
+  }
