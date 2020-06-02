@@ -1,11 +1,12 @@
 from flask import Flask, jsonify, request
-import os, requests, sys, json, base64
+import os, requests, sys, json, base64, re
 import google_auth_oauthlib.flow, googleapiclient.discovery, googleapiclient.errors
-import secret, spotifyHelper
+import secret, spotifyHelper, regex
 
 scopes = ["https://www.googleapis.com/auth/youtube"]
 
 app = Flask(__name__)
+
 
 def encodeStringBase64():
     message = "{}:{}".format(secret.client_id,secret.client_secret)
@@ -36,9 +37,13 @@ def getResponseYTAPI(vid):
 def getOauthCode():
     code = request.args.get('code')
     redirect_uri = request.args.get('ru')
+    rf = request.args.get('rf')
     encodedString = encodeStringBase64()
     url = "https://accounts.spotify.com/api/token"
-    payload = 'grant_type=authorization_code&code={}&redirect_uri={}'.format(code,redirect_uri)
+    if(rf == "0"):
+        payload = 'grant_type=authorization_code&code={}&redirect_uri={}'.format(code,redirect_uri)
+    else:
+        payload = 'grant_type=refresh_token&refresh_token={}'.format(code)
     headers = {
         'Authorization': 'Basic {}'.format(encodedString),
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -49,10 +54,17 @@ def getOauthCode():
                     data = payload
                     )
     if response.status_code != 200:
-        return { 'response_code' : response.status_code}
+        return jsonify({ 'response_code' : response.status_code})
     response_json = response.json()
+    # print("response : {}".format(response_json),file = sys.stdout)
     oauth = response_json["access_token"]
-    return {'oauth' : oauth}
+    if "refresh_token" in response_json.keys():
+        refresh_token = response_json["refresh_token"]
+    else:
+        refresh_token = "not_defined"
+    return jsonify({'oauth' : oauth,
+                    'refresh_token' : refresh_token,
+                        })
 
 
 
@@ -61,7 +73,7 @@ def getOauthCode():
 def addSongToPlaylist():
     songURI = request.args.get('songUri')
     code = request.args.get('code')
-    print("SONG_URI : {}".format(songURI),file = sys.stdout)
+    # print("SONG_URI : {}".format(songURI),file = sys.stdout)
     playListName = "SpotiAdd"
     access_token = code
     response = spotifyHelper.checkIfPlaylistExists(playListName,code)
@@ -74,6 +86,12 @@ def addSongToPlaylist():
 
 
 
+@app.route('/getSongs',methods = ['GET'])
+def getSongs():
+    title_id = request.args.get('title_id')
+
+
+
 
 
 @app.route('/<vid>', methods = ['GET'])
@@ -82,9 +100,8 @@ def getvideoTitle(vid):
     # print("access_code : {}".format(access_token),file = sys.stdout)
     response = getResponseYTAPI(vid)
     data = response["items"][0]['snippet']
-    title = data['title'].split('-')[0]
+    title = regex.getTitles(data["title"])
     # print("Title : {}".format(title),file = sys.stdout)
-    title.strip()
     category = data['categoryId']
     isMusic = False
     isMusic = category == '10'
@@ -94,9 +111,25 @@ def getvideoTitle(vid):
         }
         return jsonify(api_response)
     else:
-        uri = spotifyHelper.getSongsSpotify(title,access_token)
-        # print("URI : {}".format(uri),file = sys.stdout)
-        return jsonify(uri)
+        uri = spotifyHelper.getSongsSpotify(title[0].strip(),access_token)
+        if uri["songs_no"] == 0 and len(title)>1:
+            new_title = title[0].strip() + " " + title[1].strip()
+            # print("New Title Songs: {}".format(new_title),file = sys.stdout)
+            uri = spotifyHelper.getSongsSpotify(new_title,access_token)
+            return (jsonify({ "response" : "song_not_found"}) if uri["songs_no"] == 0 else jsonify(uri))
+
+        elif uri["songs_no"] == 0 and len(title)==1:
+            return jsonify({ "response" : "song_not_found"})
+           
+
+        elif spotifyHelper.artist_equals_query(title[0].strip(),uri):
+            new_title = title[0].strip() + " " + title[1].strip()
+            # print("New Title: {}".format(new_title),file = sys.stdout)
+            uri = spotifyHelper.getSongsSpotify(new_title,access_token)
+            return (jsonify({ "response" : "song_not_found"}) if uri["songs_no"] == 0 else jsonify(uri))
+
+        else:
+            return jsonify(uri)
        
 
 if __name__ == '__main__':

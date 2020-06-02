@@ -1,7 +1,23 @@
 import requests, json, sys
 
+def getUserId(access_token):
+    query = "https://api.spotify.com/v1/me"
+    response = requests.get(
+        query,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {}".format(access_token)
+        }
+    )
+    response_json = response.json()
+    userId = response_json["id"]
+    return userId
+
+
+
 def getSongsSpotify(song_name,access_token):
     """Search For the Song"""
+    song_name = song_name.strip()
     query = "https://api.spotify.com/v1/search?q={}&type=track&limit=20&offset=0".format(song_name)
     response = requests.get(
         query,
@@ -11,7 +27,11 @@ def getSongsSpotify(song_name,access_token):
         }
     )
     response_json = response.json()
-    # print("RESPONSE_GETSONGSSPOTIFY : {}".format(response_json))
+    # 
+    
+    songs_no = response_json["tracks"]["total"]
+    if songs_no == 0 :
+        return {"songs_no" : songs_no}
     songs = response_json["tracks"]["items"]
     if(len(songs)<5):
         uri = [songs[0]["uri"]]
@@ -19,6 +39,7 @@ def getSongsSpotify(song_name,access_token):
         artists = [songs[0]["artists"][0]["name"]]
         imageUrl = [songs[0]["album"]["images"][-1]["url"]]
         response_obj = {
+            "songs_no" : songs_no,
             "uri" : uri,
             "names" : names,
             "artists" : artists,
@@ -30,6 +51,7 @@ def getSongsSpotify(song_name,access_token):
         artists = [songs[i]["artists"][0]["name"] for i in range(0,5)]
         imageUrl = [songs[i]["album"]["images"][-1]["url"] for i in range(0,5)]
         response_obj = {
+            "songs_no" : songs_no,
             "uri" : uri,
             "names" : names,
             "artists" : artists,
@@ -45,7 +67,7 @@ def create_playlist(access_token):
         "description": "All Liked Youtube Videos",
         "public": True
     })
-    userId = "31q3a5mzo7qu53bfj7x6csdewk7a"
+    userId = getUserId(access_token)
     query = "https://api.spotify.com/v1/users/{}/playlists".format(
             userId)
     response = requests.post(
@@ -109,4 +131,11 @@ def checkIfPlaylistExists(playListname, access_token):
             'playListExists' : False,
             'id' : None
             }
+
+def artist_equals_query(title, songsObj):
+    artist_name = songsObj["artists"][0].lower()
+    if title.lower() == artist_name:
+        return True
+    else:
+        return False
     

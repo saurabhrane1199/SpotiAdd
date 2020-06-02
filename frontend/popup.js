@@ -1,35 +1,41 @@
 'use strict';
-var clientId = "6b7918c1951a48f89dd7d360a17b4eac";
-var clientSecret = "a435d9849f194fe08319203c936a5c5b";
 var count_row = 0;
 var id;
 var url;
+var refresh_token;
 var spotify_access_token;
 var redirect_uri = "https://aoighdinhjbeihojpleaohghnfecjjmo.chromiumapp.org/provider_sp";
-var auth_url = "https://accounts.spotify.com/authorize?client_id=6b7918c1951a48f89dd7d360a17b4eac&response_type=code&redirect_uri="+redirect_uri+"&scope=playlist-modify-public playlist-modify-private";
+var auth_url = "https://accounts.spotify.com/authorize?client_id=6b7918c1951a48f89dd7d360a17b4eac&response_type=code&redirect_uri="+redirect_uri+"&scope=playlist-modify-public playlist-modify-private user-read-private user-read-email";
 var is_spotify_auth = false;
-var submitButton = 
 
 chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tabs) {
   url = tabs[0].url;
-  id = url.split('v=')[1]
+  let extra = url.split('v=')[1]
+  id = extra.split('&')[0]
 });
+
+function setRefTokenFromStorage(value){
+  chrome.storage.sync.set({"refresh_token": value}, function() {
+    console.log('Refresh_Token is set to ' + value);
+  });
+}
 
 
 //get OAuthCode
-function getAuthCode(code){
+function getAuthCode(code,isRefreshToken){
 
-  fetch(`http://127.0.0.1:5000/oauth?code=${code}&ru=${redirect_uri}`)
+  fetch(`http://127.0.0.1:5000/oauth?code=${code}&ru=${redirect_uri}&rf=${isRefreshToken}`)
     .then(r => r.text())
     .then(result =>{
       let jsonRes = JSON.parse(result);
       spotify_access_token = jsonRes["oauth"];
+      refresh_token = jsonRes["refresh_token"];
+      if(refresh_token != "not_defined"){
+        setRefTokenFromStorage(refresh_token);
+      }
       console.log(spotify_access_token,"OAUTH Token");
     })
     .catch(err => console.log(err));
-
-    return
-
 }
 
 
@@ -61,17 +67,17 @@ function addSongToPlaylist(songUri){
 
 //ADD Button Listener
 function addAuthButtonListener(){
-  document.getElementById("authSpotify").addEventListener('click',function(){
-    chrome.identity.launchWebAuthFlow(
-      {'url': auth_url, 'interactive': true},
-      function(redirect_url) {
-          let code = redirect_url.split('code=')[1].split('&')[0]
-          console.log(code);
-          getAuthCode(code);
-          document.getElementById("authorizationBlock").remove();
-          document.getElementById("searchSongs").style.visibility = "visible";
-        })
-  });
+    document.getElementById("authSpotify").addEventListener('click',function(){
+      chrome.identity.launchWebAuthFlow(
+        {'url': auth_url, 'interactive': true},
+        function(redirect_url) {
+            let code = redirect_url.split('code=')[1].split('&')[0]
+            console.log(code);
+            getAuthCode(code, "0");
+            document.getElementById("authorizationBlock").remove();
+            document.getElementById("searchSongs").style.visibility = "visible";
+          });
+    });
 }
 
 //ADD Button Listener
@@ -79,7 +85,7 @@ function addSubmitButtonListener(){
   document.getElementById('submitButton').addEventListener('click', function (evt) {
     setTimeout(() => {
       getSongs(id)
-    }, 1000)
+    }, 1000);
   });
 }
 
@@ -92,22 +98,31 @@ function addSongButtonListener(){
       setTimeout(()=>{
         addSongToPlaylist(songLink);
       },1000);
-      return;
       });
-      return;
   });
-  return
 }
 
 
 
 //Add listener
 window.addEventListener('load', () => {
-  document.getElementById("searchSongs").style.visibility = "hidden";
-  document.getElementById("songs").style.visibility = "hidden";
-  document.getElementById("notMusic").style.visibility = "hidden";
+  // refresh_token = getRefTokenFromStorage();
   addAuthButtonListener();
-  addSubmitButtonListener()
+  addSubmitButtonListener();
+  chrome.storage.sync.get(["refresh_token"], function(result) {
+    console.log('Refresh_Token currently is ' + result.refresh_token);
+    refresh_token = result.refresh_token;
+    if(refresh_token != undefined){
+      getAuthCode(refresh_token, "1");
+      document.getElementById("authorizationBlock").remove();
+      document.getElementById("searchSongs").style.visibility = "visible";  
+    }
+    else{
+      document.getElementById("searchSongs").style.visibility = "hidden";
+    }
+    document.getElementById("songs").style.visibility = "hidden";
+    document.getElementById("notMusic").style.visibility = "hidden";
+  });
 });
 
 function showNotAMusicVideo(){
