@@ -1,5 +1,5 @@
 # SpotiAdd
-Google Chrome Extension to add the song playing on youtube website to spotify playlist
+Google Chrome Extension to add the song playing on youtube website to spotify playlist. Uses youtube data api and spotify apis to perform this task
 
 ## Steps to run (Backend)
 1. Create a python file and name it "secret.py"
