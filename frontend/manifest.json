@@ -10,17 +10,17 @@
   "page_action": {
     "default_popup": "popup_new.html",
     "default_icon": {
-      "16": "images/SnapSeek.png",
-      "32": "images/SnapSeek.png",
-      "48": "images/SnapSeek.png",
-      "128": "images/SnapSeek.png"
+      "16": "images/spotiadd.png",
+      "32": "images/spotiadd.png",
+      "48": "images/spotiadd.png",
+      "128": "images/spotiadd.png"
     }
   },
   "icons": {
-    "16": "images/SnapSeek.png",
-    "32": "images/SnapSeek.png",
-    "48": "images/SnapSeek.png",
-    "128": "images/SnapSeek.png"
+    "16": "images/spotiadd.png",
+    "32": "images/spotiadd.png",
+    "48": "images/spotiadd.png",
+    "128": "images/spotiadd.png"
   },
   "commands": {
     "refresh_url": {
