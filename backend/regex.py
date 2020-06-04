@@ -14,7 +14,8 @@ def getTitles(txt):
 
     for item in regexWord:
         x[0] = re.split(item,x[0])[0]
-        x[1] = re.split(item,x[1])[0]
+        if(len(x)>1):
+            x[1] = re.split(item,x[1])[0]
     
     if(len(x)>1):
         temp = x[1].split("from")

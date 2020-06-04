@@ -74,6 +74,8 @@ function addSongToPlaylist(songUri){
     .then(r=>r.text())
     .then(result =>{
       console.log(result,"Song added Succesfully added or not");
+      document.getElementById("songs").innerHTML = 
+      "<div id=\"success-added\"><div><i class=\"fa fa-check-circle\" style=\"font-size:100px;color:#1DB954;  margin-left:-60px !important;\"\"></i><h3>Song Added to Your Playlist Successfully</h3></div></div>";    
     });
 }
 

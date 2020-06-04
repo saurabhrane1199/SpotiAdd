@@ -20,7 +20,7 @@ def getResponseYTAPI(vid):
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
     api_service_name = "youtube"
     api_version = "v3"
-    DEVELOPER_KEY = "AIzaSyC0TUermEDZAcRRMPYEwsMpFu3jK8KdxDI"
+    DEVELOPER_KEY = secret.DEVELOPER_KEY
     youtube = googleapiclient.discovery.build(
         api_service_name, api_version, developerKey = DEVELOPER_KEY)
     request = youtube.videos().list(
