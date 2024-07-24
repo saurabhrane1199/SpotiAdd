@@ -21,3 +21,11 @@ The secret.py file should look like this.
 
 ### You might have to edit the callback and redirect url as per your extension id
 ### Checkout the screenshots folder to see the working of the extension
+
+## Screenshots
+
+![image1](./Screenshots/Screenshot%20(336).png)
+![image1](./Screenshots/Screenshot%20(337).png)
+![image1](./Screenshots/Screenshot%20(338).png)
+![image1](./Screenshots/Screenshot%20(339).png)
+![image1](./Screenshots/Screenshot%20(340).png)
